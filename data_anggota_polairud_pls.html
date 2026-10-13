@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Anggota Korpolairud</title>
+
+<style>
+:root {
+  --navy: #071a35;
+  --blue: #103b70;
+  --red: #e32636;
+  --bg: #eef3f9;
+  --white: #ffffff;
+  --text: #17253b;
+  --muted: #718096;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+header {
+  background: linear-gradient(120deg, #06152c, #12477d);
+  color: white;
+  padding: 22px 16px;
+  border-bottom: 5px solid var(--red);
+}
+.header-inner {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: white;
+  padding: 3px;
+}
+header h1 { font-size: 22px; margin: 0 0 7px; }
+header p { margin: 0; color: #d7e7ff; font-size: 13px; }
+.container {
+  max-width: 1100px;
+  margin: 22px auto;
+  padding: 0 14px 35px;
+}
+.dashboard {
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 5px 18px #122b4810;
+  border: 1px solid #e1e8f0;
+}
+.dashboard .label { color: var(--muted); font-size: 14px; }
+.total { font-size: 38px; font-weight: 800; color: var(--blue); margin-top: 7px; }
+.total-icon {
+  background: #e5efff;
+  color: var(--blue);
+  border-radius: 14px;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+}
+.panel {
+  background: white;
+  border: 1px solid #e1e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 5px 18px #122b480a;
+}
+.panel h2 { margin: 0 0 17px; font-size: 18px; }
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 7px;
+}
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: white;
+  font-size: 14px;
+  outline: none;
+}
+input:focus, select:focus {
+  border-color: #2875cb;
+  box-shadow: 0 0 0 3px #2875cb1a;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+button {
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 15px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+}
+.primary { background: var(--blue); color: white; }
+.secondary { background: #e8eef6; color: #193454; }
+.danger { background: #fee2e2; color: #b91c1c; }
+.success { background: #dcfce7; color: #166534; }
+.searchbar { margin-bottom: 14px; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 720px; }
+th, td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #e7edf4;
+  text-align: left;
+  font-size: 13px;
+}
+th { background: #f5f8fc; color: #334a68; }
+tbody tr:hover { background: #f8fbff; }
+.status {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 5px 9px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 11px;
+  font-weight: bold;
+}
+.row-actions { display: flex; gap: 6px; }
+.row-actions button { padding: 7px 9px; }
+.empty { text-align: center; color: var(--muted); padding: 25px; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding: 10px; }
+
+@media(max-width: 600px) {
+  header { padding: 17px 13px; }
+  .header-inner { align-items: center; gap: 12px; }
+  .logo { width: 65px; height: 65px; }
+  header h1 { font-size: 17px; }
+  header p { font-size: 11px; line-height: 1.5; }
+  .form-grid { grid-template-columns: 1fr; }
+  .panel { padding: 15px; }
+  .dashboard { padding: 18px; }
+  .total { font-size: 33px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <img class="logo" src="logo-polairud.png" alt="Logo Korpolairud"
+         onerror="this.style.display='none'">
+    <div>
+      <h1>DATA ANGGOTA KORPOLAIRUD</h1>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- DASHBOARD: JUMLAH ANGGOTA SAJA -->
+  <section class="dashboard">
+    <div>
+      <div class="label">Jumlah Seluruh Anggota</div>
+      <div class="total" id="totalAnggota">0</div>
+    </div>
+    <div class="total-icon">♟</div>
+  </section>
+
+  <!-- FORM TAMBAH / EDIT -->
+  <section class="panel" id="formPanel">
+    <h2 id="formTitle">＋ Daftarkan Anggota</h2>
+
+    <form id="memberForm">
+      <input type="hidden" id="editId">
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="nama">Nama Anggota *</label>
+          <input id="nama" required maxlength="80" placeholder="Masukkan nama anggota">
+        </div>
+
+        <div class="field">
+          <label for="roblox">Username Roblox *</label>
+          <input id="roblox" required maxlength="50" placeholder="Username Roblox">
+        </div>
+
+        <div class="field">
+          <label for="pangkat">Pangkat *</label>
+          <select id="pangkat" required>
+            <option value="">-- Pilih Pangkat --</option>
+            <optgroup label="Tamtama">
+              <option>Bharada</option>
+              <option>Bharatu</option>
+              <option>Bharaka</option>
+              <option>Abripda</option>
+              <option>Abriptu</option>
+              <option>Abrip</option>
+            </optgroup>
+            <optgroup label="Bintara">
+              <option>Bripda</option>
+              <option>Briptu</option>
+              <option>Brigpol</option>
+              <option>Bripka</option>
+              <option>Aipda</option>
+              <option>Aiptu</option>
+            </optgroup>
+            <optgroup label="Perwira Pertama">
+              <option>Ipda</option>
+              <option>Iptu</option>
+              <option>AKP</option>
+            </optgroup>
+            <optgroup label="Perwira Menengah">
+              <option>Kompol</option>
+              <option>AKBP</option>
+              <option>Kombes Pol</option>
+            </optgroup>
+            <optgroup label="Perwira Tinggi">
+              <option>Brigjen Pol</option>
+              <option>Irjen Pol</option>
+              <option>Komjen Pol</option>
+              <option>Jenderal Polisi</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="jabatan">Jabatan</label>
+          <input id="jabatan" maxlength="80" placeholder="Contoh: Anggota Patroli">
+        </div>
+
+        <div class="field">
+          <label for="satuan">Satuan Kerja</label>
+          <select id="satuan">
+            <option>Subdit Patroli</option>
+            <option>Subdit Patroli Udara</option>
+            <option>Subdit Gakkum</option>
+            <option>Staf Korpolairud</option>
+            <option>Lainnya</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="status">Status Anggota</label>
+          <select id="status">
+            <option>Aktif</option>
+            <option>Nonaktif</option>
+            <option>Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="saveBtn">Simpan Anggota</button>
+        <button type="button" class="secondary" id="cancelBtn" hidden>Batal Edit</button>
+        <button type="reset" class="secondary" id="resetBtn">Kosongkan Form</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- DAFTAR ANGGOTA -->
+  <section class="panel">
+    <h2>Daftar Data Anggota</h2>
+
+    <div class="searchbar">
+      <input id="search" placeholder="Cari nama, username, pangkat, jabatan, atau satuan...">
+    </div>
+
+    <div class="actions" style="margin-top:0;margin-bottom:15px">
+      <button class="success" id="exportBtn">Ekspor CSV</button>
+      <button class="secondary" id="printBtn">Cetak / Simpan PDF</button>
+      <button class="danger" id="deleteAllBtn">Hapus Semua Data</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Nama Anggota</th>
+            <th>Username Roblox</th>
+            <th>Pangkat</th>
+            <th>Jabatan</th>
+            <th>Satuan Kerja</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="memberTable"></tbody>
+      </table>
+    </div>
+    <div id="emptyMessage" class="empty">Belum ada data anggota. Silakan daftarkan anggota baru.</div>
+  </section>
+
+</main>
+
+<footer>Data tersimpan pada browser/perangkat ini.</footer>
+
+<script>
+const STORAGE_KEY = "korpolairud_anggota_v2";
+let anggota = [];
+
+try {
+  anggota = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  if (!Array.isArray(anggota)) anggota = [];
+} catch {
+  anggota = [];
+}
+
+const $ = id => document.getElementById(id);
+const form = $("memberForm");
+
+function simpanStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(anggota));
+}
+
+function aman(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function render() {
+  $("totalAnggota").textContent = anggota.length;
+
+  const q = $("search").value.trim().toLowerCase();
+  const filtered = anggota.filter(a =>
+    [a.nama, a.roblox, a.pangkat, a.jabatan, a.satuan, a.status]
+      .some(v => String(v || "").toLowerCase().includes(q))
+  );
+
+  $("memberTable").innerHTML = filtered.map((a, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td><strong>${aman(a.nama)}</strong></td>
+      <td>${aman(a.roblox)}</td>
+      <td>${aman(a.pangkat)}</td>
+      <td>${aman(a.jabatan || "-")}</td>
+      <td>${aman(a.satuan || "-")}</td>
+      <td><span class="status" style="${
+        a.status === "Nonaktif"
+          ? "background:#fee2e2;color:#991b1b"
+          : a.status === "Dalam Pelatihan"
+          ? "background:#fef3c7;color:#92400e"
+          : ""
+      }">${aman(a.status)}</span></td>
+      <td>
+        <div class="row-actions">
+          <button class="secondary" onclick="editAnggota('${a.id}')">Edit</button>
+          <button class="danger" onclick="hapusAnggota('${a.id}')">Hapus</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+
+  $("emptyMessage").style.display = filtered.length ? "none" : "block";
+}
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const editId = $("editId").value;
+  const data = {
+    id: editId || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random())),
+    nama: $("nama").value.trim(),
+    roblox: $("roblox").value.trim(),
+    pangkat: $("pangkat").value,
+    jabatan: $("jabatan").value.trim(),
+    satuan: $("satuan").value,
+    status: $("status").value
+  };
+
+  if (!data.nama || !data.roblox || !data.pangkat) {
+    alert("Lengkapi nama, username Roblox, dan pangkat.");
+    return;
+  }
+
+  if (editId) {
+    const index = anggota.findIndex(a => a.id === editId);
+    if (index !== -1) anggota[index] = data;
+  } else {
+    anggota.push(data);
+  }
+
+  simpanStorage();
+  resetForm();
+  render();
+  alert(editId ? "Data anggota berhasil diperbarui." : "Anggota berhasil didaftarkan.");
+});
+
+function editAnggota(id) {
+  const a = anggota.find(item => item.id === id);
+  if (!a) return;
+
+  $("editId").value = a.id;
+  $("nama").value = a.nama || "";
+  $("roblox").value = a.roblox || "";
+  $("pangkat").value = a.pangkat || "";
+  $("jabatan").value = a.jabatan || "";
+  $("satuan").value = a.satuan || "Subdit Patroli";
+  $("status").value = a.status || "Aktif";
+
+  $("formTitle").textContent = "✎ Edit Data Anggota";
+  $("saveBtn").textContent = "Simpan Perubahan";
+  $("cancelBtn").hidden = false;
+  $("formPanel").scrollIntoView({ behavior: "smooth" });
+}
+
+function hapusAnggota(id) {
+  const a = anggota.find(item => item.id === id);
+  if (!a) return;
+
+  if (!confirm(`Hapus data anggota "${a.nama}"? Data yang dihapus tidak bisa dipulihkan.`)) return;
+
+  anggota = anggota.filter(item => item.id !== id);
+  simpanStorage();
+  render();
+
+  if ($("editId").value === id) resetForm();
+}
+
+function resetForm() {
+  form.reset();
+  $("editId").value = "";
+  $("formTitle").textContent = "＋ Daftarkan Anggota";
+  $("saveBtn").textContent = "Simpan Anggota";
+  $("cancelBtn").hidden = true;
+}
+
+$("cancelBtn").addEventListener("click", resetForm);
+$("resetBtn").addEventListener("click", () => setTimeout(resetForm, 0));
+$("search").addEventListener("input", render);
+
+$("deleteAllBtn").addEventListener("click", () => {
+  if (!anggota.length) {
+    alert("Belum ada data anggota untuk dihapus.");
+    return;
+  }
+
+  if (!confirm("PERINGATAN: Hapus SEMUA data anggota? Tindakan ini tidak bisa dibatalkan.")) return;
+  if (!confirm("Konfirmasi sekali lagi: kamu yakin ingin menghapus seluruh data anggota?")) return;
+
+  anggota = [];
+  simpanStorage();
+  resetForm();
+  render();
+  alert("Semua data anggota telah dihapus.");
+});
+
+$("exportBtn").addEventListener("click", () => {
+  if (!anggota.length) {
+    alert("Belum ada data untuk diekspor.");
+    return;
+  }
+
+  const columns = [
+    ["Nama Anggota", "nama"],
+    ["Username Roblox", "roblox"],
+    ["Pangkat", "pangkat"],
+    ["Jabatan", "jabatan"],
+    ["Satuan Kerja", "satuan"],
+    ["Status", "status"]
+  ];
+
+  const csvCell = value => '"' + String(value ?? "").replace(/"/g, '""') + '"';
+  const csv = [
+    columns.map(c => csvCell(c[0])).join(","),
+    ...anggota.map(a => columns.map(c => csvCell(a[c[1]])).join(","))
+  ].join("\r\n");
+
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "data-anggota-korpolairud.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+$("printBtn").addEventListener("click", () => window.print());
+
+render();
+</script>
+
+<style>
+@media print {
+  body { background: white; }
+  header { background: white !important; color: black; border-bottom: 2px solid black; }
+  header p { color: black; }
+  .dashboard, #formPanel, .searchbar, .actions, .row-actions, footer { display: none !important; }
+  .container { max-width: none; margin: 0; padding: 0; }
+  .panel { box-shadow: none; border: 0; padding: 0; }
+  table { min-width: 0; }
+  th, td { font-size: 10px; padding: 6px 4px; }
+}
+</style>
+
+</body>
+</html>
